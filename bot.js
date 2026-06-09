@@ -1,25 +1,45 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 
-const token = '8773923823:AAGVGFAe0pqgkPZPDr5iJudWp9LRZZCljsA'; 
+// 1. Telegram Bot Sozlamalari (Token Render-dan xavfsiz olinadi)
+const token = process.env.BOT_TOKEN; 
 const bot = new TelegramBot(token, { polling: true });
 
-const SYSTEM_INSTRUCTION = `
-Sen foydalanuvchining eng yaqin, samimiy va juda aqlli AI hamkorisan. Har qanday xabarga juda tez va kechikishlarsiz javob qaytar. Foydalanuvchi so‘ragan narsani shunchaki quruq yozmasdan, juda aniq, batafsil, tushunarli qilib uzaytirib tushuntirib ber.
-Foydalanuvchi nusxalab olishi (copy qilishi) oson bo‘lishi uchun kodlarni yoki muhim matnlarni alohida tayyor kod bloklari (\`\`\`) ichida taqdim et. Matn ichida sarlavhalar (##), chiziqlar (---), qalin yozuvlar (**...**) va mos keladigan emojilardan juda faol foydalan. Har bir javobingning oxirida mavzuga mos bitta qiziqarli va aniq savol yozib ket.
-`;
+// 2. AI uchun qat'iy buyruq (Prompt)
+const AI_INSTRUCTION = "Sen Telegram botisan. Foydalanuvchi savoliga har doim faqat bitta, eng to‘g‘ri, qisqa va annaq javobni berishing shart. Hech qanday variantlar, ro‘yxatlar, uzun tavsiyalar va cho‘zib tushuntirishlar yozma. Savolga lo‘nda qilib, maksimal 1-2 ta gap bilan darhol javob qaytar.";
 
-bot.on('message', (msg) => {
+// 3. Botga xabar kelganda ishlaydigan qism
+bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
-  if (text === '/start') {
-    bot.sendMessage(chatId, "## 🚀 WebCore AI Botga Xush Kelibsiz!\n\nMen har doim onlaynman va sizga yordam berishga tayyorman. Menga ixtiyoriy savolingizni bering! 😊");
-  } else {
-    bot.sendMessage(chatId, `## 🤖 AI Yordamchisi\n\nSizning savolingiz qabul qilindi: "${text}"\n\nServer 24/7 rejimda ishlamoqda, shuning uchun noutbuk o'chsa ham men javob beraman! 🎉\n\n---\n*Sizga boshqa qanday yordam bera olaman?*`, { parse_mode: 'Markdown' });
+  if (!text || text === '/start') {
+    return bot.sendMessage(chatId, "Salom! Men WebCore AI botman. Savolingizni bering, qisqa va lo'nda javob beraman! 🚀");
+  }
+
+  try {
+    // Kelajakda bu yerga sun'iy intellekt API (masalan, OpenAI yoki Google Gemini) ulanadi
+    const aiResponse = `[AI Javobi]: Savolingiz qabul qilindi. AI tizimi yoqilmoqda...`; 
+    bot.sendMessage(chatId, aiResponse);
+  } catch (error) {
+    bot.sendMessage(chatId, "Xatolik yuz berdi, qaytadan urinib ko'ring.");
   }
 });
 
+console.log("WebCore AI Bot muvaffaqiyatli ishga tushdi...");
+
+// =============================================================
+// RENDER SERVERI O'CHIB QOLMASLIGI UCHUN EXPRESS SERVER
+// =============================================================
 const app = express();
-app.get('/', (req, res) => res.send('Bot Status: 24/7 Active!'));
-app.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.get('/', (req, res) => { 
+  res.send('Bot Status: Active and Running 24/7'); 
+});
+
+app.listen(PORT, () => { 
+  console.log(`Server running on port ${PORT}`); 
+});
