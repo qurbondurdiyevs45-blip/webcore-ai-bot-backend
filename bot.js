@@ -1,34 +1,25 @@
-const { Telegraf } = require('telegraf'); // yoki siz qaysi kutubxonadan foydalangan bo'lsangiz (masalan, node-telegram-bot-api)
+const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 
-// 1. Telegram Botni ulash
-// BotFather'dan olgan tokeningizni shu yerga qo'ying yoki Render'ning Environment Variables bo'limiga kiriting
-const bot = new Telegraf(process.env.BOT_TOKEN || 'BU_YERGA_TELEGRAM_TOKENINGIZNI_QO_YING');
+const token = '8773923823:AAGVGFAe0pqgkPZPDr5iJudWp9LRZZCljsA'; 
+const bot = new TelegramBot(token, { polling: true });
 
-// Botga kelgan so'rovlarni boshqarish (Siz yozgan kodlar)
-bot.start((ctx) => ctx.reply('Salom! Men har doim yoniq turadigan WebCore AI botman! 🚀'));
-bot.on('text', (ctx) => {
-    const userMessage = ctx.message.text;
-    ctx.reply(`Siz yozdingiz: ${userMessage}`);
+const SYSTEM_INSTRUCTION = `
+Sen foydalanuvchining eng yaqin, samimiy va juda aqlli AI hamkorisan. Har qanday xabarga juda tez va kechikishlarsiz javob qaytar. Foydalanuvchi so‘ragan narsani shunchaki quruq yozmasdan, juda aniq, batafsil, tushunarli qilib uzaytirib tushuntirib ber.
+Foydalanuvchi nusxalab olishi (copy qilishi) oson bo‘lishi uchun kodlarni yoki muhim matnlarni alohida tayyor kod bloklari (\`\`\`) ichida taqdim et. Matn ichida sarlavhalar (##), chiziqlar (---), qalin yozuvlar (**...**) va mos keladigan emojilardan juda faol foydalan. Har bir javobingning oxirida mavzuga mos bitta qiziqarli va aniq savol yozib ket.
+`;
+
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const text = msg.text;
+
+  if (text === '/start') {
+    bot.sendMessage(chatId, "## 🚀 WebCore AI Botga Xush Kelibsiz!\n\nMen har doim onlaynman va sizga yordam berishga tayyorman. Menga ixtiyoriy savolingizni bering! 😊");
+  } else {
+    bot.sendMessage(chatId, `## 🤖 AI Yordamchisi\n\nSizning savolingiz qabul qilindi: "${text}"\n\nServer 24/7 rejimda ishlamoqda, shuning uchun noutbuk o'chsa ham men javob beraman! 🎉\n\n---\n*Sizga boshqa qanday yordam bera olaman?*`, { parse_mode: 'Markdown' });
+  }
 });
 
-// Botni ishga tushirish (Polling usulida)
-bot.launch().then(() => {
-    console.log('Telegram bot muvaffaqiyatli ishga tushdi...');
-});
-
-
-// ==========================================
-// RENDER O'CHIB QOLMASLIGI UCHUN EXPRESS SERVER
-// ==========================================
 const app = express();
-const PORT = process.env.PORT || 3000; // Render o'zi avtomatik port beradi
-
-app.get('/', (req, res) => {
-    res.send('Bot status: Active and Running 24/7!');
-});
-
-app.listen(PORT, () => {
-    console.log(`Express server portda ishlamoqda: ${PORT}`);
-});
-// ==========================================
+app.get('/', (req, res) => res.send('Bot Status: 24/7 Active!'));
+app.listen(process.env.PORT || 3000);
