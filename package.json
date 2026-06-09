@@ -1,12 +1,12 @@
 {
-  "name": "webcore-ai-bot",
+  "name": "webcore-ai-bot-backend",
   "version": "1.0.0",
-  "description": "WebCore AI Telegram Bot",
-  "main": "bot.js",
+  "description": "Telegram bot for WebCoreAI",
+  "main": "index.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node index.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.66.0"
+    "telegraf": "^4.16.3"
   }
 }
